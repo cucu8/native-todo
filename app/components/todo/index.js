@@ -16,7 +16,7 @@ const Todo = ({ deleteTodo, todoComplete, item }) => {
                 : { ...styles.todoContainer, borderColor: "#30BE71" }}
             >
                 <Text style={styles.todoText}>
-                    {item.text}
+                    {item.title}
                 </Text>
                 {item.completed && <Icon name="check" size={16} color="#30BE71" />}
 

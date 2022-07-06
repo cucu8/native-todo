@@ -1,24 +1,35 @@
-import React, { useState } from "react";
-import uuid from 'react-native-uuid';
-import { Alert } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import {
+    Alert
+} from "react-native";
+import {
+    Todos as getTodos,
+    createTodo as dbCreateTodo,
+    deleteTodo as dbDeleteTodo,
+    updateTodo as dbUpdateTood
+} from "../../db";
 
 const Todos = (ChildrenMethod) => {
     const [todoText, setTodoText] = useState("");
     const [todoList, setTodoList] = useState([]);
+    const inputRef = useRef();
+
+    useEffect(() => {
+        setTodoList(JSON.parse(JSON.stringify(getTodos)))
+    }, [])
 
     const addTodo = () => {
         if (todoText === "") return alert("Please Write something Todo");
-
-        setTodoList([
-            ...todoList,
-            {
-                id: uuid.v4(),
-                text: todoText,
-                completed: false,
-
-            }
+        const createdData = dbCreateTodo({
+            title: todoText,
+            completed: false,
+        });
+        setTodoList((_todoList) => [
+            ..._todoList,
+            createdData
         ]);
         setTodoText("");
+        inputRef.current.blur();
     }
 
     const deleteTodo = (id) => {
@@ -31,16 +42,18 @@ const Todos = (ChildrenMethod) => {
                 },
                 {
                     text: "Ok",
-                    onPress: () => setTodoList(todoList.filter(todo => todo.id !== id)),
+                    onPress: () => {
+                        dbDeleteTodo(id);
+                        setTodoList(todoList.filter(todo => todo._id !== id))
+                    },
                 }
             ]
         );
     }
 
     const todoComplete = (id, data) => {
-
         const newData = todoList.map(todo => {
-            if (todo.id === id) {
+            if (todo._id === id) {
                 todo = {
                     ...todo,
                     ...data
@@ -48,6 +61,7 @@ const Todos = (ChildrenMethod) => {
             };
             return todo;
         });
+        dbUpdateTood(id, data);
         setTodoList(newData);
     }
 
@@ -77,6 +91,7 @@ const Todos = (ChildrenMethod) => {
         deleteTodo={deleteTodo}
         todoList={todoList}
         todoText={todoText}
+        inputRef={inputRef}
         addTodo={addTodo}
     />
 

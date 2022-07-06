@@ -23,8 +23,11 @@ export const styles = StyleSheet.create({
         padding: 20
     },
     imageContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        paddingBottom: 90,
         height: "100%",
-        marginTop: 182,
+        flex: 1,
     },
     addIcon: {
         width: 50,
